@@ -4,6 +4,7 @@ import { Head } from '@inertiajs/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { CustomTextarea } from '@/components/ui/custom-textarea';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -43,13 +44,26 @@ export default function ProductForm() {
                                 <div className="grid gap-2">
                                     <Label htmlFor='name'>Description</Label>
 
+                                    <CustomTextarea 
+                                    id='description' 
+                                    name='description'
+                                    tabIndex={2}
+                                    placeholder='Product Description'
+                                    rows={3}
+                                    />
+                                </div>
+
+                                {/* Product Price */}
+                                <div className="grid gap-2">
+                                    <Label htmlFor='price'>Price</Label>
+
                                     <Input
-                                        id='name'
-                                        name='name'
+                                        id='price'
+                                        name='price'
                                         type='text'
-                                        placeholder='Product Name'
+                                        placeholder='Product Price'
                                         autoFocus
-                                        tabIndex={1}
+                                        tabIndex={3}
                                     ></Input>
                                 </div>
                             </div>
