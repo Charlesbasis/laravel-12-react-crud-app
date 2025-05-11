@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
+use App\Http\Requests\ProductFormRequest;
 
 class ProductController extends Controller
 {
@@ -26,10 +27,12 @@ class ProductController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * @param ProductFormRequest $request
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(ProductFormRequest $request)
     {
-        //
+        dd($request->all());
     }
 
     /**
