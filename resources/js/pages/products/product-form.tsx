@@ -29,9 +29,16 @@ export default function ProductForm() {
         post(route('products.store'), {
             onSuccess: () => console.log('Form submitted'),            
         })
-        console.log('data', data);
+        console.log('data', data);        
+    }
+    
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if(e.target.files && e.target.files.length > 0) {
+            setData('featured_image', e.target.files[0]);
+        }
+
         
-    }        
+    }
     
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -95,7 +102,7 @@ export default function ProductForm() {
                                 <div className="grid gap-2">
                                     <Label htmlFor="featured_image">Featured Image</Label>
 
-                                    <Input id="featured_image" name="featured_image" type="file" autoFocus tabIndex={4}></Input>
+                                    <Input onChange={handleFileUpload} id="featured_image" name="featured_image" type="file" autoFocus tabIndex={4}></Input>
                                 
                                     <InputError message={errors.featured_image}></InputError>
                                 </div>

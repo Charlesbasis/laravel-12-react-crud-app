@@ -32,7 +32,20 @@ class ProductController extends Controller
      */
     public function store(ProductFormRequest $request)
     {
-        dd($request->all());
+        $featuredImage = null;
+        
+        if ($request->file('featured_image')) {
+            $featuredImage = $request->file('featured_image');
+            $featuredImageOriginalName = $featuredImage->getClientOriginalName();
+            $featuredImage = $featuredImage->store('products', 'public');
+        }
+
+        Product::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'price' => $request->price,
+            'featured_image' => $featuredImage,
+        ]);
     }
 
     /**
