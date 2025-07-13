@@ -1,8 +1,6 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { Head, Link } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -12,32 +10,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Index() {
-    const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
-    const flashMessage = flash?.success || flash?.error;
-    const [ showAlert, setShowAlert ] = useState(flashMessage ? true : false);
-    
-    useEffect(() => {
-        if(flashMessage) {
-            const timer = setTimeout(() => setShowAlert(false), 3000);
-            return () => clearTimeout(timer);
-        }
-    }, [flashMessage]);
-    
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Product Management" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-                {showAlert && flashMessage && (
-                    <Alert variant={'default'} className={`${flash?.success ? 'bg-green-800' : (flash?.error ? 'bg-red-800' : '')} ml-auto max-w-md text-white`}>
-                        <AlertTitle className='font-bold'>
-                            {flash.success ? 'Success' : 'Error'}
-                        </AlertTitle>
-                        <AlertDescription className='text-white'>
-                            {flash.success ? 'Success!' : 'Error!'} { '' }
-                            {flashMessage}
-                        </AlertDescription>
-                    </Alert>
-                )}
                 {/* Add Product Button */}
                 <div className="ml-auto">
                     <Link

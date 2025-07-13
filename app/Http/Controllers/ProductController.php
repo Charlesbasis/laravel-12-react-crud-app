@@ -6,7 +6,6 @@ use Inertia\Inertia;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Requests\ProductFormRequest;
-use Illuminate\Support\Facades\Log as FacadesLog;
 
 class ProductController extends Controller
 {
@@ -33,32 +32,20 @@ class ProductController extends Controller
      */
     public function store(ProductFormRequest $request)
     {
-        try {
-            $featuredImage = null;
+        $featuredImage = null;
         
-            if ($request->file('featured_image')) {
-                $featuredImage = $request->file('featured_image');
-                $featuredImageOriginalName = $featuredImage->getClientOriginalName();
-                $featuredImage = $featuredImage->store('products', 'public');
-            }
-
-            $product = Product::create([
-                'name' => $request->name,
-                'description' => $request->description,
-                'price' => $request->price,
-                'featured_image' => $featuredImage,
-                'featured_image_original_name' => $featuredImageOriginalName,
-            ]);
-
-            if ($product) {
-                return redirect()->route('products.index')->with('success', 'Product created successfully.');
-            }
-            else {
-                return redirect()->route('products.index')->with('error', 'Unable to create product. Please try again.');
-            }
-        } catch (\Exception $e) {
-           FacadesLog::error('Prodcut creation failed: ' . $e->getMessage());
+        if ($request->file('featured_image')) {
+            $featuredImage = $request->file('featured_image');
+            $featuredImageOriginalName = $featuredImage->getClientOriginalName();
+            $featuredImage = $featuredImage->store('products', 'public');
         }
+
+        Product::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'price' => $request->price,
+            'featured_image' => $featuredImage,
+        ]);
     }
 
     /**
