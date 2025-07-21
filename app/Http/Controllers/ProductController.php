@@ -6,6 +6,7 @@ use Inertia\Inertia;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Requests\ProductFormRequest;
+use Exception;
 use Illuminate\Support\Facades\Log as FacadesLog;
 
 class ProductController extends Controller
@@ -15,7 +16,10 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return Inertia::render('products/index');
+        $products = Product::latest()->get();
+        return Inertia::render('products/index', [
+            'products' => $products,
+        ]);
     }
 
     /**
@@ -56,7 +60,7 @@ class ProductController extends Controller
             else {
                 return redirect()->route('products.index')->with('error', 'Unable to create product. Please try again.');
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
            FacadesLog::error('Prodcut creation failed: ' . $e->getMessage());
         }
     }

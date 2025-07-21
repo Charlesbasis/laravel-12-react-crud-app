@@ -11,7 +11,18 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Index() {
+interface Product {
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    image: string;
+    featured_image: string;
+    created_at: string;
+}
+
+export default function Index({...props}: {products: Product[]}) {
+    const { products } = props;
     const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
     const flashMessage = flash?.success || flash?.error;
     const [ showAlert, setShowAlert ] = useState(flashMessage ? true : false);
@@ -55,23 +66,27 @@ export default function Index() {
                                 <th className="border p-4">#</th>
                                 <th className="border p-4">Name</th>
                                 <th className="border p-4">Description</th>
-                                <th className="border p-4">Price</th>
+                                <th className="border p-4">Price (BDT)</th>
                                 <th className="border p-4">Featured Image</th>
                                 <th className="border p-4">Created Date</th>
                                 <th className="border p-4">Action</th>
                             </tr>
                         </thead>
-
+                        
                         <tbody>
-                            <tr>
-                                <td className="border px-4 py-2 text-center text-black">1</td>
-                                <td className="border px-4 py-2 text-center text-black">Mobile Phone</td>
-                                <td className="border px-4 py-2 text-center text-black">Mobile Phone Description</td>
-                                <td className="border px-4 py-2 text-center text-black">12000</td>
-                                <td className="border px-4 py-2 text-center text-black"></td>
-                                <td className="border px-4 py-2 text-center text-black">2025-04-01</td>
-                                <td className="border px-4 py-2 text-center text-black"></td>
-                            </tr>
+                            {products.map((product, index) =>  (
+                                <tr key={index}>
+                                    <td className="border px-4 py-2 text-center text-black">{index + 1}</td>
+                                    <td className="border px-4 py-2 text-center text-black">{product.name}</td>
+                                    <td className="border px-4 py-2 text-center text-black">{product.description}</td>
+                                    <td className="border px-4 py-2 text-center text-black">{product.price}</td>
+                                    <td className="border px-4 py-2 text-center text-black">
+                                        <img src={product.featured_image} alt={product.featured_image} className="w-24 h-24 object-cover rounded-lg" />
+                                    </td>
+                                    <td className="border px-4 py-2 text-center text-black">{product.created_at}</td>
+                                    <td className="border px-4 py-2 text-center text-black"></td>                                    
+                                </tr>
+                            ))}                            
                         </tbody>
                     </table>
                 </div>
