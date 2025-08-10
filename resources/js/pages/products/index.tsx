@@ -12,28 +12,28 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 interface Product {
-    id: number;
-    name: string;
-    description: string;
-    price: number;
-    image: string;
-    featured_image: string;
-    created_at: string;
+    id: number,
+    name: string,
+    description: string,
+    price: number,
+    featured_image: string,
+    created_at: string,
 }
 
-export default function Index({...props}: {products: Product[]}) {
-    const { products } = props;
+export default function Index({ products }: { products: [] }) {
+    console.log(typeof products);
+    // const { products } = props;
     const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
     const flashMessage = flash?.success || flash?.error;
-    const [ showAlert, setShowAlert ] = useState(flashMessage ? true : false);
-    
+    const [showAlert, setShowAlert] = useState(flashMessage ? true : false);
+
     useEffect(() => {
-        if(flashMessage) {
+        if (flashMessage) {
             const timer = setTimeout(() => setShowAlert(false), 3000);
             return () => clearTimeout(timer);
         }
     }, [flashMessage]);
-    
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Product Management" />
@@ -44,7 +44,7 @@ export default function Index({...props}: {products: Product[]}) {
                             {flash.success ? 'Success' : 'Error'}
                         </AlertTitle>
                         <AlertDescription className='text-white'>
-                            {flash.success ? 'Success!' : 'Error!'} { '' }
+                            {flash.success ? 'Success!' : 'Error!'} {''}
                             {flashMessage}
                         </AlertDescription>
                     </Alert>
@@ -72,21 +72,21 @@ export default function Index({...props}: {products: Product[]}) {
                                 <th className="border p-4">Action</th>
                             </tr>
                         </thead>
-                        
+
                         <tbody>
-                            {products.map((product, index) =>  (
+                            {products.map((product, index) => (
                                 <tr key={index}>
                                     <td className="border px-4 py-2 text-center text-black">{index + 1}</td>
                                     <td className="border px-4 py-2 text-center text-black">{product.name}</td>
                                     <td className="border px-4 py-2 text-center text-black">{product.description}</td>
                                     <td className="border px-4 py-2 text-center text-black">{product.price}</td>
                                     <td className="border px-4 py-2 text-center text-black">
-                                        <img src={product.featured_image} alt={product.featured_image} className="w-24 h-24 object-cover rounded-lg" />
+                                        <img src={product.featured_image} alt={product.name} className="w-24 h-24 object-cover rounded-lg" />
                                     </td>
                                     <td className="border px-4 py-2 text-center text-black">{product.created_at}</td>
-                                    <td className="border px-4 py-2 text-center text-black"></td>                                    
+                                    <td className="border px-4 py-2 text-center text-black"></td>
                                 </tr>
-                            ))}                            
+                            ))}
                         </tbody>
                     </table>
                 </div>
