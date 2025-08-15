@@ -12,17 +12,18 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 interface Product {
-    id: number,
-    name: string,
-    description: string,
-    price: number,
-    featured_image: string,
-    created_at: string,
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    featured_image: string;
+    created_at: string;
 }
 
-export default function Index({ products }: { products: [] }) {
-    console.log(typeof products);
-    // const { products } = props;
+export default function Index({ ...props }: { products: Product[] }) {
+// export default function Index({ products }: { products: [] }) {
+    // console.log('check', products);
+    const { products } = props;
     const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
     const flashMessage = flash?.success || flash?.error;
     const [showAlert, setShowAlert] = useState(flashMessage ? true : false);
@@ -77,13 +78,13 @@ export default function Index({ products }: { products: [] }) {
                             {products.map((product, index) => (
                                 <tr key={index}>
                                     <td className="border px-4 py-2 text-center text-black">{index + 1}</td>
-                                    <td className="border px-4 py-2 text-center text-black">{product.name}</td>
-                                    <td className="border px-4 py-2 text-center text-black">{product.description}</td>
-                                    <td className="border px-4 py-2 text-center text-black">{product.price}</td>
+                                    <td className="border px-4 py-2 text-center text-black">{product?.name}</td>
+                                    <td className="border px-4 py-2 text-center text-black">{product?.description}</td>
+                                    <td className="border px-4 py-2 text-center text-black">{product?.price}</td>
                                     <td className="border px-4 py-2 text-center text-black">
-                                        <img src={product.featured_image} alt={product.name} className="w-24 h-24 object-cover rounded-lg" />
+                                        <img src={product?.featured_image} alt={product.name} className="w-24 h-24 object-cover rounded-lg" />
                                     </td>
-                                    <td className="border px-4 py-2 text-center text-black">{product.created_at}</td>
+                                    <td className="border px-4 py-2 text-center text-black">{product?.created_at}</td>
                                     <td className="border px-4 py-2 text-center text-black"></td>
                                 </tr>
                             ))}
