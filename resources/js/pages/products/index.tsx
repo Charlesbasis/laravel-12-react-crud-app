@@ -2,6 +2,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
+import { Circle, CirclePlusIcon, Eye, Pencil, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -53,11 +54,11 @@ export default function Index({ ...props }: { products: Product[] }) {
                 {/* Add Product Button */}
                 <div className="ml-auto">
                     <Link
-                        className="text-md cursor-pointer rounded-lg bg-indigo-800 px-4 py-2 text-white hover:opacity-90"
+                        className="flex items-center text-md cursor-pointer rounded-lg bg-indigo-800 px-4 py-2 text-white hover:opacity-90"
                         as="button"
                         href={route('products.create')}
                     >
-                        Add Product
+                        <CirclePlusIcon className='me-2' /> Add Product
                     </Link>
                 </div>
                 <div className="overflow-hidden rounded-lg border bg-white shadow-sm">
@@ -77,15 +78,37 @@ export default function Index({ ...props }: { products: Product[] }) {
                         <tbody>
                             {products.map((product, index) => (
                                 <tr key={index}>
-                                    <td className="border px-4 py-2 text-center text-black">{index + 1}</td>
-                                    <td className="border px-4 py-2 text-center text-black">{product?.name}</td>
-                                    <td className="border px-4 py-2 text-center text-black">{product?.description}</td>
-                                    <td className="border px-4 py-2 text-center text-black">{product?.price}</td>
-                                    <td className="border px-4 py-2 text-center text-black">
+                                    <td className="border px-4 py-2 text-center">{index + 1}</td>
+                                    <td className="border px-4 py-2 text-center">{product?.name}</td>
+                                    <td className="border px-4 py-2 text-center">{product?.description}</td>
+                                    <td className="border px-4 py-2 text-center">{product?.price}</td>
+                                    <td className="border px-4 py-2 text-center">
                                         <img src={product?.featured_image} alt={product.name} className="w-24 h-24 object-cover rounded-lg" />
                                     </td>
-                                    <td className="border px-4 py-2 text-center text-black">{product?.created_at}</td>
-                                    <td className="border px-4 py-2 text-center text-black"></td>
+                                    <td className="border px-4 py-2 text-center">{product?.created_at}</td>
+                                    <td className="border px-4 py-2 text-center">
+                                        <Link
+                                            as='button'
+                                            href={route('products.show', product.id)}
+                                            className="bg-sky-600 text-white p-2 rounded-lg cursor-pointer hover:opacity-90"
+                                        >
+                                            <Eye size={18} />{' '}
+                                        </Link>
+                                        <Link
+                                            as='button'
+                                            href={route('products.show', product.id)}
+                                            className="ms-2 bg-green-600 text-white p-2 rounded-lg cursor-pointer hover:opacity-90"
+                                        >
+                                            <Pencil size={18} />{' '}
+                                        </Link>
+                                        <Link
+                                            as='button'
+                                            href={route('products.show', product.id)}
+                                            className="ms-2 bg-red-600 text-white p-2 rounded-lg cursor-pointer hover:opacity-90"
+                                        >
+                                            <Trash2 size={18} />{' '}
+                                        </Link>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>

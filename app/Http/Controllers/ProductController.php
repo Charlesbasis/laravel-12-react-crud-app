@@ -16,13 +16,17 @@ class ProductController extends Controller
      */
     public function index()
     {
-        // $products = Product::latest()->get();
-        $products = Product::latest()->get()->map(function ($product) {            
-            $product->featured_image = $product->featured_image
+        $products = Product::latest()->get()->map(fn($product) => [
+            'id' => $product->id,
+            'name' => $product->name,
+            'description' => $product->description,
+            'price' => $product->price,
+            'featured_image' => $product->featured_image
                 ? asset('storage/' . $product->featured_image)
-                : null;
-            return $product;
-        });
+                : null,
+            'featured_image_original_name' => $product->featured_image_original_name,
+            'created_at' => $product->created_at->format('d M Y'),
+        ]);            
         return Inertia::render('products/index', [
             'products' => $products,
         ]);
@@ -76,7 +80,20 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+        return Inertia::render('products/product-form', [
+            'product' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'price' => $product->price,
+                'featured_image' => $product->featured_image
+                    ? asset('storage/' . $product->featured_image)
+                    : null,
+                'featured_image_original_name' => $product->featured_image_original_name,
+                'created_at' => $product->created_at->format('d M Y'),
+            ],
+            'isView' => true,
+        ]);
     }
 
     /**
