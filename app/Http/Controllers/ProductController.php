@@ -101,15 +101,44 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+        return Inertia::render('products/product-form', [
+            'product' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'price' => $product->price,
+                'featured_image' => $product->featured_image
+                    ? asset('storage/' . $product->featured_image)
+                    : null,
+                'featured_image_original_name' => $product->featured_image_original_name,
+                'created_at' => $product->created_at->format('d M Y'),
+            ],
+            'isEdit' => true,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product)
+    public function update(ProductFormRequest $request, Product $product)
     {
-        //
+        if ($product) {
+            $product->name = $request->name;
+            $product->description = $request->description;
+            $product->price = $request->price;
+
+            if ($request->file('featured_image')) {            
+                $featuredImage = $request->file('featured_image');
+                $featuredImageOriginalName = $featuredImage->getClientOriginalName();
+                $featuredImage = $featuredImage->store('products', 'public');
+                $product->featured_image = $featuredImage;
+                $product->featured_image_original_name = $featuredImageOriginalName;
+            }
+            
+            $product->save();
+            return redirect()->route('products.index')->with('success', 'Product updated successfully.');
+        }
+        return redirect()->back()->with('error', 'Unable to update product. Please try again.');
     }
 
     /**

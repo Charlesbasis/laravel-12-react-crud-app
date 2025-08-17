@@ -96,7 +96,7 @@ export default function Index({ ...props }: { products: Product[] }) {
                                         </Link>
                                         <Link
                                             as='button'
-                                            href={route('products.show', product.id)}
+                                            href={route('products.edit', product.id)}
                                             className="ms-2 bg-green-600 text-white p-2 rounded-lg cursor-pointer hover:opacity-90"
                                         >
                                             <Pencil size={18} />{' '}

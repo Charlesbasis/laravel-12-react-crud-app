@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, LoaderCircle } from 'lucide-react';
 
 export default function ProductForm({ ...props }) {
     const { product, isView, isEdit } = props;
@@ -22,20 +22,28 @@ export default function ProductForm({ ...props }) {
         description: product?.description || '',
         price: product?.price || 0,
         featured_image: null as File | null,
+        _method: isEdit ? 'PUT' : 'POST',
     });
 
     const submit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        
-        post(route('products.store'), {
-            onSuccess: () => console.log('Form submitted'),            
-        })
-        console.log('data', data);        
+
+        if (isEdit) {
+            post(route('products.update', product.id), {
+                onSuccess: () => reset(),
+            });
+        } else {
+            post(route('products.store'), {
+                onSuccess: () => reset(),
+            });
+        }      
     }
     
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        
         if(e.target.files && e.target.files.length > 0) {
             setData('featured_image', e.target.files[0]);
+            // console.log(e.target.files[0]);
         }        
     }
     
@@ -116,25 +124,31 @@ export default function ProductForm({ ...props }) {
                                 </div>
 
                                 {/* Product Featured Image */}
-                                {!isView ? (
+                                {!isView && (
                                     <div className="grid gap-2">
-                                    <Label htmlFor="featured_image">Featured Image</Label>
+                                        <Label htmlFor="featured_image">Featured Image</Label>
 
-                                    <Input onChange={handleFileUpload} id="featured_image" name="featured_image" type="file" autoFocus tabIndex={4}></Input>
+                                        <Input onChange={handleFileUpload} id="featured_image" name="featured_image" type="file" accept='image/*' autoFocus tabIndex={4}></Input>
+
+                                        <InputError message={errors.featured_image}></InputError>
+                                    </div>
+                                )} 
                                 
-                                    <InputError message={errors.featured_image}></InputError>
-                                </div>                                    
-                                ) : (
+                                {/* Display featured image */}
+                                {isView || (isEdit && (
                                     <div className="grid gap-2">
                                         <Label htmlFor="featured_image">Current Featured Image</Label>
                                         <img src={product?.featured_image} alt="Featured Image" className="w-24 h-24 object-cover rounded-lg" />
                                     </div>
-                                )}
+                                ))}
+
                                 {/* Submit Button */}
-                                <Button type="submit" className="mt-4 w-fit" tabIndex={4}>
-                                    {/* {processing && <LoaderCircle className="h-4 w-4 animate-spin" />} */}
-                                    Save Product
-                                </Button>
+                                {!isView && (                                    
+                                    <Button type="submit" className="mt-4 w-fit" tabIndex={4}>
+                                        {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
+                                        {processing ? (isEdit ? 'Updating...' : 'Creating...') : isEdit ? 'Update' : 'Create'} Product
+                                    </Button>
+                                )}                                
                             </div>
                         </form>
                     </CardContent>
