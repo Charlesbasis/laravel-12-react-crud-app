@@ -122,7 +122,8 @@ class ProductController extends Controller
      */
     public function update(ProductFormRequest $request, Product $product)
     {
-        if ($product) {
+        try {
+            if ($product) {
             $product->name = $request->name;
             $product->description = $request->description;
             $product->price = $request->price;
@@ -139,6 +140,9 @@ class ProductController extends Controller
             return redirect()->route('products.index')->with('success', 'Product updated successfully.');
         }
         return redirect()->back()->with('error', 'Unable to update product. Please try again.');
+        } catch (Exception $e) {
+            FacadesLog::error('Product update failed: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -146,6 +150,15 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        try {
+            if ($product) {
+                $product->delete();
+                return redirect()->back()->with('success', 'Product deleted successfully.');
+            }
+            return redirect()->back()->with('error', 'Unable to delete product. Please try again.');
+        } catch (Exception $e) {
+            FacadesLog::error('Product deletion failed: ' . $e->getMessage());
+        }
+        
     }
 }

@@ -1,8 +1,9 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/react';
-import { Circle, CirclePlusIcon, Eye, Pencil, Trash2 } from 'lucide-react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { CirclePlusIcon, Eye, Pencil, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -26,11 +27,13 @@ export default function Index({ ...props }: { products: Product[] }) {
     // console.log('check', products);
     const { products } = props;
     const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
-    const flashMessage = flash?.success || flash?.error;
-    const [showAlert, setShowAlert] = useState(flashMessage ? true : false);
+    const flashMessage = flash?.success || flash?.error || "";
+    const [showAlert, setShowAlert] = useState(false);
 
+    console.log('from index', flashMessage, flash, showAlert)
     useEffect(() => {
         if (flashMessage) {
+            setShowAlert(true);
             const timer = setTimeout(() => setShowAlert(false), 3000);
             return () => clearTimeout(timer);
         }
@@ -43,10 +46,10 @@ export default function Index({ ...props }: { products: Product[] }) {
                 {showAlert && flashMessage && (
                     <Alert variant={'default'} className={`${flash?.success ? 'bg-green-800' : (flash?.error ? 'bg-red-800' : '')} ml-auto max-w-md text-white`}>
                         <AlertTitle className='font-bold'>
-                            {flash.success ? 'Success' : 'Error'}
+                            {flash?.success ? 'Success' : 'Error'}
                         </AlertTitle>
                         <AlertDescription className='text-white'>
-                            {flash.success ? 'Success!' : 'Error!'} {''}
+                            {flash?.success ? 'Success!' : 'Error!'} {''}
                             {flashMessage}
                         </AlertDescription>
                     </Alert>
@@ -76,14 +79,17 @@ export default function Index({ ...props }: { products: Product[] }) {
                         </thead>
 
                         <tbody>
-                            {products.map((product, index) => (
+                            {products.length > 0 ? (
+                                products.map((product, index) => (
                                 <tr key={index}>
                                     <td className="border px-4 py-2 text-center">{index + 1}</td>
                                     <td className="border px-4 py-2 text-center">{product?.name}</td>
                                     <td className="border px-4 py-2 text-center">{product?.description}</td>
                                     <td className="border px-4 py-2 text-center">{product?.price}</td>
                                     <td className="border px-4 py-2 text-center">
-                                        <img src={product?.featured_image} alt={product.name} className="w-24 h-24 object-cover rounded-lg" />
+                                        {product.featured_image && (
+                                            <img src={product?.featured_image} alt={product.name} className="w-24 h-24 object-cover rounded-lg" />
+                                        )}                                        
                                     </td>
                                     <td className="border px-4 py-2 text-center">{product?.created_at}</td>
                                     <td className="border px-4 py-2 text-center">
@@ -101,16 +107,26 @@ export default function Index({ ...props }: { products: Product[] }) {
                                         >
                                             <Pencil size={18} />{' '}
                                         </Link>
-                                        <Link
-                                            as='button'
-                                            href={route('products.show', product.id)}
-                                            className="ms-2 bg-red-600 text-white p-2 rounded-lg cursor-pointer hover:opacity-90"
+                                        <Button
+                                            className='ms-2 bg-red-600 text-white p-2 rounded-lg cursor-pointer hover:opacity-90'
+                                            onClick={() => {
+                                                if (confirm('Are you sure you want to delete this product?')) {
+                                                    router.delete(route('products.destroy', product.id), {
+                                                        preserveScroll: true,
+                                                    });
+                                                }
+                                            }}
                                         >
                                             <Trash2 size={18} />{' '}
-                                        </Link>
+                                        </Button>
                                     </td>
                                 </tr>
-                            ))}
+                            ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={6} className="font-bold text-red-600 py-4 text-center">No products found!</td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>

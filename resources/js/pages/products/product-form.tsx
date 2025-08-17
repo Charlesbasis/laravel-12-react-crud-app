@@ -43,7 +43,6 @@ export default function ProductForm({ ...props }) {
         
         if(e.target.files && e.target.files.length > 0) {
             setData('featured_image', e.target.files[0]);
-            // console.log(e.target.files[0]);
         }        
     }
     
@@ -135,12 +134,12 @@ export default function ProductForm({ ...props }) {
                                 )} 
                                 
                                 {/* Display featured image */}
-                                {isView || (isEdit && (
+                                {(isView || isEdit) && product?.featured_image && (
                                     <div className="grid gap-2">
                                         <Label htmlFor="featured_image">Current Featured Image</Label>
                                         <img src={product?.featured_image} alt="Featured Image" className="w-24 h-24 object-cover rounded-lg" />
                                     </div>
-                                ))}
+                                )}
 
                                 {/* Submit Button */}
                                 {!isView && (                                    
