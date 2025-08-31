@@ -16,7 +16,9 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::latest()->get()->map(fn($product) => [
+        $products = Product::latest()->paginate(5);
+
+        $products->getCollection()->transform(fn($product) => [
             'id' => $product->id,
             'name' => $product->name,
             'description' => $product->description,
@@ -26,7 +28,8 @@ class ProductController extends Controller
                 : null,
             'featured_image_original_name' => $product->featured_image_original_name,
             'created_at' => $product->created_at->format('d M Y'),
-        ]);            
+        ]);
+
         return Inertia::render('products/index', [
             'products' => $products,
         ]);

@@ -1,5 +1,6 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import Pagination from '@/components/ui/pagination';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
@@ -13,19 +14,36 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+interface LinkProps {
+    active: boolean;
+    label: string;
+    url: string;
+}
+
 interface Product {
     id: number;
     name: string;
     description: string;
     price: number;
     featured_image: string;
+    featured_image_original_name: string;
     created_at: string;
 }
 
-export default function Index({ ...props }: { products: Product[] }) {
-// export default function Index({ products }: { products: [] }) {
-    // console.log('check', products);
-    const { products } = props;
+interface ProductPagination {
+    data: Product[];
+    links: LinkProps[];
+    from: number;
+    to: number;
+    total: number;
+}
+
+interface IndexProps {
+    products: ProductPagination;
+}
+
+export default function Index({ products }: IndexProps ) {
+    console.log('from index', products);
     const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
     const flashMessage = flash?.success || flash?.error || "";
     const [showAlert, setShowAlert] = useState(false);
@@ -79,8 +97,8 @@ export default function Index({ ...props }: { products: Product[] }) {
                         </thead>
 
                         <tbody>
-                            {products.length > 0 ? (
-                                products.map((product, index) => (
+                            {products.data.length > 0 ? (
+                                products.data.map((product, index) => (
                                 <tr key={index}>
                                     <td className="border px-4 py-2 text-center">{index + 1}</td>
                                     <td className="border px-4 py-2 text-center">{product?.name}</td>
@@ -130,6 +148,8 @@ export default function Index({ ...props }: { products: Product[] }) {
                         </tbody>
                     </table>
                 </div>
+
+                <Pagination products={products} />
             </div>
         </AppLayout>
     );
