@@ -28,7 +28,9 @@ class ProductController extends Controller
             );
         }
         
-        $products = $products->latest()->paginate(5)->withQueryString();
+        $perPage = $request->perPage ?? 10;
+        
+        $products = $products->latest()->paginate($perPage)->withQueryString();
 
         $products->getCollection()->transform(fn($product) => [
             'id' => $product->id,
@@ -44,7 +46,7 @@ class ProductController extends Controller
 
         return Inertia::render('products/index', [
             'products' => $products,
-            'filters' => $request->only('search'),
+            'filters' => $request->only(['search', 'perPage']),
         ]);
     }
 

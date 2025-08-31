@@ -41,6 +41,7 @@ interface ProductPagination {
 
 interface FilterProps {
     search: string;
+    perPage: string;
 }
 
 interface IndexProps {
@@ -54,7 +55,7 @@ export default function Index({ products, filters }: IndexProps ) {
     const flashMessage = flash?.success || flash?.error || "";
     const [showAlert, setShowAlert] = useState(false);
 
-    console.log('from index', flashMessage, flash, showAlert)
+    // console.log('from index', flashMessage, flash, showAlert)
     useEffect(() => {
         if (flashMessage) {
             setShowAlert(true);
@@ -65,6 +66,7 @@ export default function Index({ products, filters }: IndexProps ) {
 
     const { data, setData } = useForm({
         search:  filters.search || '',
+        perPage: filters.perPage || '10',
     });
     
     // Handle Change for the Search Input
@@ -82,6 +84,14 @@ export default function Index({ products, filters }: IndexProps ) {
     const handleReset = () => {
         setData('search', '');
         router.get(route('products.index'), {}, {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
+
+    const handlePerPageChange = (value: string) => {
+        setData('perPage', value);
+        router.get(route('products.index'), {perPage: value}, {
             preserveState: true,
             preserveScroll: true,
         });
@@ -197,7 +207,7 @@ export default function Index({ products, filters }: IndexProps ) {
                     </table>
                 </div>
 
-                <Pagination products={products} />
+                <Pagination products={products} perPage={data.perPage} onPerPageChange={handlePerPageChange} />
             </div>
         </AppLayout>
     );
