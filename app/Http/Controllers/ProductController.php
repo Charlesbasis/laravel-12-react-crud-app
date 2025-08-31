@@ -14,9 +14,23 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::latest()->get()->map(fn($product) => [
+        $products = Product::query();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $products->where(fn($query) => 
+                $query->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%')
+                    ->orWhere('price', 'like', '%' . $search . '%')
+            );
+        }
+        
+        $products = $products->latest()->paginate(5)->withQueryString();
+
+        $products->getCollection()->transform(fn($product) => [
             'id' => $product->id,
             'name' => $product->name,
             'description' => $product->description,
@@ -26,9 +40,11 @@ class ProductController extends Controller
                 : null,
             'featured_image_original_name' => $product->featured_image_original_name,
             'created_at' => $product->created_at->format('d M Y'),
-        ]);            
+        ]);
+
         return Inertia::render('products/index', [
             'products' => $products,
+            'filters' => $request->only('search'),
         ]);
     }
 
