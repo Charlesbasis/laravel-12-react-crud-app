@@ -1,10 +1,11 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import Pagination from '@/components/ui/pagination';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import { CirclePlusIcon, Eye, Pencil, Trash2 } from 'lucide-react';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { CirclePlusIcon, Eye, Pencil, Trash2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -38,12 +39,17 @@ interface ProductPagination {
     total: number;
 }
 
-interface IndexProps {
-    products: ProductPagination;
+interface FilterProps {
+    search: string;
 }
 
-export default function Index({ products }: IndexProps ) {
-    console.log('from index', products);
+interface IndexProps {
+    products: ProductPagination;
+    filters: FilterProps;
+}
+
+export default function Index({ products, filters }: IndexProps ) {
+    // console.log('from index', filters);
     const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
     const flashMessage = flash?.success || flash?.error || "";
     const [showAlert, setShowAlert] = useState(false);
@@ -56,6 +62,30 @@ export default function Index({ products }: IndexProps ) {
             return () => clearTimeout(timer);
         }
     }, [flashMessage]);
+
+    const { data, setData } = useForm({
+        search:  filters.search || '',
+    });
+    
+    // Handle Change for the Search Input
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setData('search', value);
+        const queryString = value ? { search: value } : {};
+        router.get(route('products.index'), queryString, {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
+
+    // To Reset Applied Filters
+    const handleReset = () => {
+        setData('search', '');
+        router.get(route('products.index'), {}, {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -72,8 +102,25 @@ export default function Index({ products }: IndexProps ) {
                         </AlertDescription>
                     </Alert>
                 )}
+
+                {/* Search Inputs and button */}
+                <div className="flex items-center justify-between gap-4">
+
+                    <Input
+                        type='text'
+                        placeholder='Search Product...'
+                        name='search'
+                        className='w-1/3'
+                        onChange={handleChange}
+                        value={data.search}
+                    />
+
+                    <Button onClick={handleReset} className='bg-red-600 rounded-lg cursor-pointer hover:bg-red-500'>
+                        <X size={18} />
+                    </Button>
                 {/* Add Product Button */}
                 <div className="ml-auto">
+                    
                     <Link
                         className="flex items-center text-md cursor-pointer rounded-lg bg-indigo-800 px-4 py-2 text-white hover:opacity-90"
                         as="button"
@@ -81,6 +128,7 @@ export default function Index({ products }: IndexProps ) {
                     >
                         <CirclePlusIcon className='me-2' /> Add Product
                     </Link>
+                </div>
                 </div>
                 <div className="overflow-hidden rounded-lg border bg-white shadow-sm">
                     <table className="w-full table-auto">
