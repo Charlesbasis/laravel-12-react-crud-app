@@ -47,15 +47,17 @@ interface FilterProps {
 interface IndexProps {
     products: ProductPagination;
     filters: FilterProps;
+    totalCount: number;
+    filteredCount: number;
 }
 
-export default function Index({ products, filters }: IndexProps ) {
+export default function Index({ products, filters, totalCount, filteredCount }: IndexProps ) {
     // console.log('from index', filters);
     const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
     const flashMessage = flash?.success || flash?.error || "";
     const [showAlert, setShowAlert] = useState(false);
 
-    // console.log('from index', flashMessage, flash, showAlert)
+    console.log('from index', products);
     useEffect(() => {
         if (flashMessage) {
             setShowAlert(true);
@@ -73,7 +75,12 @@ export default function Index({ products, filters }: IndexProps ) {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setData('search', value);
-        const queryString = value ? { search: value } : {};
+
+        const queryString = {
+            ...(value && { search: value }),
+            ...(data.perPage && { perPage: data.perPage }),
+        };
+
         router.get(route('products.index'), queryString, {
             preserveState: true,
             preserveScroll: true,
@@ -83,6 +90,7 @@ export default function Index({ products, filters }: IndexProps ) {
     // To Reset Applied Filters
     const handleReset = () => {
         setData('search', '');
+        setData('perPage', '10');
         router.get(route('products.index'), {}, {
             preserveState: true,
             preserveScroll: true,
@@ -91,7 +99,13 @@ export default function Index({ products, filters }: IndexProps ) {
 
     const handlePerPageChange = (value: string) => {
         setData('perPage', value);
-        router.get(route('products.index'), {perPage: value}, {
+        
+        const queryString = {
+            ...(data.search && { search: data.search }),
+            ...(value && { perPage: value }),
+        };
+
+        router.get(route('products.index'), queryString, {
             preserveState: true,
             preserveScroll: true,
         });
@@ -158,7 +172,7 @@ export default function Index({ products, filters }: IndexProps ) {
                             {products.data.length > 0 ? (
                                 products.data.map((product, index) => (
                                 <tr key={index}>
-                                    <td className="border px-4 py-2 text-center">{index + 1}</td>
+                                    <td className="border px-4 py-2 text-center">{products.from + index}</td>
                                     <td className="border px-4 py-2 text-center">{product?.name}</td>
                                     <td className="border px-4 py-2 text-center">{product?.description}</td>
                                     <td className="border px-4 py-2 text-center">{product?.price}</td>
@@ -207,7 +221,7 @@ export default function Index({ products, filters }: IndexProps ) {
                     </table>
                 </div>
 
-                <Pagination products={products} perPage={data.perPage} onPerPageChange={handlePerPageChange} />
+                <Pagination search={data.search} totalCount={totalCount} filteredCount={filteredCount} products={products} perPage={data.perPage} onPerPageChange={handlePerPageChange} />
             </div>
         </AppLayout>
     );

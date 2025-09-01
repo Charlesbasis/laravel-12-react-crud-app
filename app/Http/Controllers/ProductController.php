@@ -16,37 +16,68 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $products = Product::query();
+        $productsQuery = Product::query();
+
+        // Capturing the total count before applying filters
+        $totalCount = $productsQuery->count();
 
         if ($request->filled('search')) {
             $search = $request->search;
 
-            $products->where(fn($query) => 
+            $productsQuery->where(fn($query) => 
                 $query->where('name', 'like', '%' . $search . '%')
                     ->orWhere('description', 'like', '%' . $search . '%')
                     ->orWhere('price', 'like', '%' . $search . '%')
             );
         }
         
-        $perPage = $request->perPage ?? 10;
+        $filteredCount = $productsQuery->count();
         
-        $products = $products->latest()->paginate($perPage)->withQueryString();
+        $perPage = (int) $request->perPage ?? 10;
 
-        $products->getCollection()->transform(fn($product) => [
-            'id' => $product->id,
-            'name' => $product->name,
-            'description' => $product->description,
-            'price' => $product->price,
-            'featured_image' => $product->featured_image
-                ? asset('storage/' . $product->featured_image)
-                : null,
-            'featured_image_original_name' => $product->featured_image_original_name,
-            'created_at' => $product->created_at->format('d M Y'),
-        ]);
+        // Fetch all the records
+        if ($perPage === -1) {
+            $allProducts = $productsQuery->latest()->get()->map(fn($product) => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'price' => $product->price,
+                'featured_image' => $product->featured_image
+                    ? asset('storage/' . $product->featured_image)
+                    : null,
+                'featured_image_original_name' => $product->featured_image_original_name,
+                'created_at' => $product->created_at->format('d M Y'),
+            ]);
+
+            $products = [
+                'data' => $allProducts,
+                'total' => $filteredCount,
+                'per_page' => $perPage,
+                'from' => 1,
+                'to' => $filteredCount,
+                'links' => [],
+            ];
+        } else {
+            $products = $productsQuery->latest()->paginate($perPage)->withQueryString();
+            $products->getCollection()->transform(fn($product) => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'price' => $product->price,
+                'featured_image' => $product->featured_image
+                    ? asset('storage/' . $product->featured_image)
+                    : null,
+                'featured_image_original_name' => $product->featured_image_original_name,
+                'created_at' => $product->created_at->format('d M Y'),
+            ]);
+        }
+
 
         return Inertia::render('products/index', [
             'products' => $products,
             'filters' => $request->only(['search', 'perPage']),
+            'totalCount' => $totalCount,
+            'filteredCount' => $filteredCount,
         ]);
     }
 
