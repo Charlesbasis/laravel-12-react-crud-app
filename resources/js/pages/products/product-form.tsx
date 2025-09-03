@@ -31,6 +31,7 @@ export default function ProductForm({ ...props }) {
         if (isEdit) {
             post(route('products.update', product.id), {
                 onSuccess: () => reset(),
+                forceFormData: true,
             });
         } else {
             post(route('products.store'), {

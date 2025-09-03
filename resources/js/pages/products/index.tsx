@@ -1,3 +1,4 @@
+import CustomTable from '@/components/custom-table';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +8,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { CirclePlusIcon, Eye, Pencil, Trash2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { ProductTableConfig } from '@/config/tables/product-table';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -154,7 +156,9 @@ export default function Index({ products, filters, totalCount, filteredCount }: 
                     </Link>
                 </div>
                 </div>
-                <div className="overflow-hidden rounded-lg border bg-white shadow-sm">
+
+                <CustomTable columns={ProductTableConfig.columns} actions={ProductTableConfig.actions} />
+                {/* <div className="overflow-hidden rounded-lg border bg-white shadow-sm">
                     <table className="w-full table-auto">
                         <thead>
                             <tr className="bg-gray-700 text-white">
@@ -219,7 +223,7 @@ export default function Index({ products, filters, totalCount, filteredCount }: 
                             )}
                         </tbody>
                     </table>
-                </div>
+                </div> */}
 
                 <Pagination search={data.search} totalCount={totalCount} filteredCount={filteredCount} products={products} perPage={data.perPage} onPerPageChange={handlePerPageChange} />
             </div>
