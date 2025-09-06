@@ -4,7 +4,7 @@ import { CategoryModalFormConfig } from '@/config/forms/category-modal-form';
 import { CategoryTableConfig } from '@/config/tables/category-table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, router } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -51,10 +51,16 @@ interface IndexProps {
 
 export default function Index({ categories }: IndexProps) {
   // console.log('from index', filters);
-  // const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
-  // const flashMessage = flash?.success || flash?.error || "";
+  const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
+  const flashMessage = flash?.success || flash?.error || "";
 
-  // console.log('from index', categories);    
+  // console.log('from index', categories);
+  
+  const { data, setData, errors, processing, reset, post } = useForm({
+    name: '',
+    description: '',
+    image: null as File | null,
+  });
 
   const handleDelete = (id: number, route: string) => {
     if (confirm('Are you sure you want to delete this product?')) {
@@ -75,6 +81,10 @@ export default function Index({ categories }: IndexProps) {
             description={CategoryModalFormConfig.description}
             fields={CategoryModalFormConfig.fields}
             buttons={CategoryModalFormConfig.buttons}
+            data={data}
+            setData={setData}
+            errors={errors}
+            processing={processing}
           />
         </div>
         <CustomTable

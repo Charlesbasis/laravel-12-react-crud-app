@@ -50,9 +50,12 @@ interface CustomModalFormProps {
   description: string;
   fields: FieldProps[];
   buttons: ButtonProps[];
+  data: Record<string, any>;
+  setData: (name: string, value: any) => void;
+  processing: boolean;
 }
 
-export const CustomModalForm = ({ addButton, title, description, fields, buttons }: CustomModalFormProps) => {
+export const CustomModalForm = ({ addButton, title, description, fields, buttons, data, setData, processing }: CustomModalFormProps) => {
   return (
     <Dialog>
       <form>
@@ -90,6 +93,8 @@ export const CustomModalForm = ({ addButton, title, description, fields, buttons
                     autoComplete={field.autocomplete}
                     tabIndex={field.tabIndex}
                     className={field.className}
+                    onChange={(e) => setData(field.name, e.target.value)}
+                    value={data[field.name]}
                   >
                   </textarea>
                 ) : field.type === 'file' ? (
@@ -118,17 +123,32 @@ export const CustomModalForm = ({ addButton, title, description, fields, buttons
             ))}
           </div>
           <DialogFooter>
-            {buttons.map((button) => (
-              <DialogClose asChild key={button.key}>
-                <Button
-                  key={button.key}
-                  variant={button.variant}
-                  className={button.className}
-                  type={button.type}>
-                  {button.label}
-                </Button>
-              </DialogClose>
-            ))}
+            {buttons.map((button) => {
+              if (button.key === 'cancel') {
+                return (
+                  <DialogClose asChild key={button.key}>
+                    <Button
+                      key={button.key}
+                      variant={button.variant}
+                      className={button.className}
+                      type={button.type}>
+                      {button.label}
+                    </Button>
+                  </DialogClose>
+                );
+              }
+              else if (button.key === 'submit') {
+                return (
+                  <Button
+                    key={button.key}
+                    variant={button.variant}
+                    className={button.className}
+                    type={button.type}>
+                    {button.label}
+                  </Button>
+                );
+              }
+            })}
           </DialogFooter>
         </DialogContent>
       </form>

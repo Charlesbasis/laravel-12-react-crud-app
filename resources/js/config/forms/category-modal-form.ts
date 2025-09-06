@@ -52,7 +52,7 @@ export const CategoryModalFormConfig =  {
         type: 'button',
         label: 'Cancel',
         variant: 'ghost',
-        className: 'bg-gray-300 text-gray-700 px-4 py-2 rounded-lg cursor-pointer hover:opacity-90',
+        className: 'cursor-pointer',
       },
       {
         key: 'submit',
