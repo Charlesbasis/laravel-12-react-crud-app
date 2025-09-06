@@ -1,6 +1,6 @@
 import { CirclePlus } from "lucide-react"
 
-const CategoryModalFormConfig =  {
+export const CategoryModalFormConfig =  {
   moduleTitle: 'Manage Categories',
   title: 'Create Category',
   description: 'Fill in the details below to create a new category.',
@@ -46,6 +46,20 @@ const CategoryModalFormConfig =  {
         accept: 'image/*',
     },
     ],
+  buttons: [
+      {
+        key: 'cancel',
+        type: 'button',
+        label: 'Cancel',
+        variant: 'ghost',
+        className: 'bg-gray-300 text-gray-700 px-4 py-2 rounded-lg cursor-pointer hover:opacity-90',
+      },
+      {
+        key: 'submit',
+        type: 'submit',
+        label: 'Save Category',
+        variant: 'default',
+        className: 'cursor-pointer',
+      },
+    ],
 }
-
-export default CategoryModalFormConfig

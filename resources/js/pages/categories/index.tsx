@@ -1,10 +1,10 @@
 import { CustomModalForm } from '@/components/custom-modal-form';
 import CustomTable from '@/components/custom-table';
+import { CategoryModalFormConfig } from '@/config/forms/category-modal-form';
 import { CategoryTableConfig } from '@/config/tables/category-table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, router, usePage } from '@inertiajs/react';
-import { CategoryModalFormConfig } from '@/config/forms/category-modal-form';
+import { Head, router } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -51,8 +51,8 @@ interface IndexProps {
 
 export default function Index({ categories }: IndexProps) {
   // console.log('from index', filters);
-  const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
-  const flashMessage = flash?.success || flash?.error || "";
+  // const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
+  // const flashMessage = flash?.success || flash?.error || "";
 
   // console.log('from index', categories);    
 
@@ -74,6 +74,7 @@ export default function Index({ categories }: IndexProps) {
             title={CategoryModalFormConfig.title}
             description={CategoryModalFormConfig.description}
             fields={CategoryModalFormConfig.fields}
+            buttons={CategoryModalFormConfig.buttons}
           />
         </div>
         <CustomTable

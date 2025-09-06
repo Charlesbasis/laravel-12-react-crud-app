@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { FieldProps } from "@headlessui/react";
 
 interface AddButtonProps {
   id: string;
@@ -37,14 +36,23 @@ interface FieldProps {
   className?: string;
 }
 
+interface ButtonProps {
+  key: string;
+  type: 'button' | 'submit' | 'reset' | undefined;
+  label: string;
+  variant: 'default' | 'outline' | 'ghost' | 'link' | 'destructive' | undefined;
+  className: string;
+}
+
 interface CustomModalFormProps {
   addButton: AddButtonProps;
   title: string;
   description: string;
   fields: FieldProps[];
+  buttons: ButtonProps[];
 }
 
-export const CustomModalForm = ({ addButton, title, description, fields }: CustomModalFormProps) => {
+export const CustomModalForm = ({ addButton, title, description, fields, buttons }: CustomModalFormProps) => {
   return (
     <Dialog>
       <form>
@@ -63,8 +71,8 @@ export const CustomModalForm = ({ addButton, title, description, fields }: Custo
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
-            
-            <DialogDescription>{description}</DialogDescription>            
+
+            <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-6">
@@ -74,7 +82,7 @@ export const CustomModalForm = ({ addButton, title, description, fields }: Custo
                   {field.label}
                 </Label>
                 {field.type === 'textarea' ? (
-                  <textarea 
+                  <textarea
                     id={field.id}
                     name={field.name}
                     placeholder={field.placeholder}
@@ -82,48 +90,45 @@ export const CustomModalForm = ({ addButton, title, description, fields }: Custo
                     autoComplete={field.autocomplete}
                     tabIndex={field.tabIndex}
                     className={field.className}
-                  >                    
+                  >
                   </textarea>
                 ) : field.type === 'file' ? (
-                  <Input 
+                  <Input
                     id={field.id}
                     name={field.name}
                     placeholder={field.placeholder}
-                    autoComplete={field.autocomplete} 
-                    tabIndex={field.tabIndex} 
+                    autoComplete={field.autocomplete}
+                    tabIndex={field.tabIndex}
                     accept={field.accept}
                     type={field.type}
-                  >                    
+                  >
                   </Input>
-                  ) : (
-                    <Input 
-                      id={field.id}
-                      name={field.name}
-                      placeholder={field.placeholder}
-                      autoComplete={field.autocomplete}
-                      tabIndex={field.tabIndex}
-                      type={field.type}
-                    >                    
-                    </Input>
-                  )}
+                ) : (
+                  <Input
+                    id={field.id}
+                    name={field.name}
+                    placeholder={field.placeholder}
+                    autoComplete={field.autocomplete}
+                    tabIndex={field.tabIndex}
+                    type={field.type}
+                  >
+                  </Input>
+                )}
               </div>
             ))}
-
-            {/* <div className="grid gap-3">
-              <Label htmlFor="name-1">Name</Label>
-              <Input id="name-1" name="name" defaultValue="Pedro Duarte" />
-            </div>
-            <div className="grid gap-3">
-              <Label htmlFor="username-1">Username</Label>
-              <Input id="username-1" name="username" defaultValue="@peduarte" />
-            </div> */}
-
           </div>
           <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DialogClose>
-            <Button type="submit">Save changes</Button>
+            {buttons.map((button) => (
+              <DialogClose asChild key={button.key}>
+                <Button
+                  key={button.key}
+                  variant={button.variant}
+                  className={button.className}
+                  type={button.type}>
+                  {button.label}
+                </Button>
+              </DialogClose>
+            ))}
           </DialogFooter>
         </DialogContent>
       </form>
