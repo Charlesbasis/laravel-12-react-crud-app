@@ -28,9 +28,12 @@ interface CustomTableProps {
     data: TableRow[];
     from: number;
     onDelete: (id: number, route: string) => void;
+    onView: (row: TableRow) => void;
+    onEdit: (row: TableRow) => void;
+    isModal?: boolean;
 }
 
-function CustomTable({ columns, actions, data, from, onDelete }: CustomTableProps) {
+function CustomTable({ columns, actions, data, from, onDelete, onView, onEdit, isModal }: CustomTableProps) {
     // console.log('from custom table', actions);
 
     const renderActionButtons = (row: TableRow) => {
@@ -39,16 +42,42 @@ function CustomTable({ columns, actions, data, from, onDelete }: CustomTableProp
                 {actions.map((action, index) => {
                     const IconComponent = LucidIcons[action.icon] as React.ElementType;
 
-                    if (action.label === 'Delete') {
-                        return (
-                            <Button
-                                key={index}
-                                className={action.className}
-                                onClick={() => onDelete(row.id, route(action.route, row.id))}                                    
-                            >
-                                <IconComponent size={18} />{' '}
-                            </Button>
-                        );
+                    if (isModal) {
+                        if (action.label === 'View') {
+                            return (
+                                <Button
+                                    key={index}
+                                    className={action.className}
+                                    onClick={() => onView?.(row)}                                    
+                                >
+                                    <IconComponent size={18} />{' '}
+                                </Button>   
+                            );
+                        }
+                        
+                        if (action.label === 'Edit') {
+                            return (
+                                <Button
+                                    key={index}
+                                    className={action.className}
+                                    onClick={() => onEdit?.(row)}                                    
+                                >
+                                    <IconComponent size={18} />{' '}
+                                </Button>   
+                            );
+                        }
+
+                        if (action.label === 'Delete') {
+                            return (
+                                <Button
+                                    key={index}
+                                    className={action.className}
+                                    onClick={() => onDelete(row.id, route(action.route, row.id))}                                    
+                                >
+                                    <IconComponent size={18} />{' '}
+                                </Button>
+                            );
+                        }
                     }
 
                     return (

@@ -55,6 +55,9 @@ export default function Index({ categories }: IndexProps) {
   const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
   const flashMessage = flash?.success || flash?.error || "";
   const [modalOpen, setModalOpen] = useState(false);
+  const [mode, setMode] = useState<'create' | 'view' | 'edit'>('create');
+  const [selectedCategory, setSelectedCategory] = useState<any>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   // console.log('from index', categories);
 
@@ -87,15 +90,52 @@ export default function Index({ categories }: IndexProps) {
   }
 
   const closeModal = () => {
+    setMode('create');
+    setSelectedCategory(null);
+    setPreviewImage(null);
     reset();
+
     setModalOpen(false);
   }
 
   const handleModalToggle = (open: boolean) => {
+
     setModalOpen(open);
+
     if (!open) {
+
+      setPreviewImage(null);
+      setMode('create');
+      setSelectedCategory(null);
+
       reset();
     }
+  }
+
+  const openModal = (mode: 'create' | 'view' | 'edit', category?: any) => {
+
+    setMode(mode);
+
+    console.log('from index category mode', category, mode);
+
+    if (category) {
+      Object.entries(category).forEach(([key, value]) => {
+        if (key !== 'image') {
+
+          setData(key as keyof typeof data, value as string | null);
+        }
+      });
+
+      setPreviewImage(category.image);
+      setSelectedCategory(category);
+    } else {
+      reset();
+    }
+
+    // console.log('from index data', data);
+    
+    setModalOpen(true);
+
   }
 
   return (
@@ -116,6 +156,7 @@ export default function Index({ categories }: IndexProps) {
             handleSubmit={handleSubmit}
             open={modalOpen}
             onOpenChange={handleModalToggle}
+            mode={mode}
           />
         </div>
         <CustomTable
@@ -124,6 +165,9 @@ export default function Index({ categories }: IndexProps) {
           data={categories.data}
           columns={CategoryTableConfig.columns}
           actions={CategoryTableConfig.actions}
+          onView={(category) => openModal('view', category)}
+          onEdit={(category) => openModal('edit', category)}
+          isModal={true}
         />
       </div>
     </AppLayout>
