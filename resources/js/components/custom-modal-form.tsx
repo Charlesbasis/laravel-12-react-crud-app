@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -8,9 +8,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import InputError from "./input-error";
 
 interface AddButtonProps {
   id: string;
@@ -53,31 +54,48 @@ interface CustomModalFormProps {
   data: Record<string, any>;
   setData: (name: string, value: any) => void;
   processing: boolean;
+  handleSubmit: (data: any) => void;
+  errors: Record<string, string>;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export const CustomModalForm = ({ addButton, title, description, fields, buttons, data, setData, processing }: CustomModalFormProps) => {
+export const CustomModalForm = ({
+  addButton,
+  title,
+  description,
+  fields,
+  buttons,
+  data,
+  setData,
+  processing,
+  handleSubmit,
+  errors,
+  open,
+  onOpenChange,
+}: CustomModalFormProps) => {
+
   return (
-    <Dialog>
-      <form>
-        <DialogTrigger asChild>
+    <Dialog open={open} onOpenChange={onOpenChange} modal>
+      <DialogTrigger asChild>
+        <Button
+          id={addButton.id}
+          variant={addButton.variant}
+          className={addButton.className}
+          type={addButton.type}
+        >
+          {addButton.icon && <addButton.icon />} {addButton.label}
+        </Button>
+      </DialogTrigger>
 
-          <Button
-            id={addButton.id}
-            variant={addButton.variant}
-            className={addButton.className}
-            type={addButton.type}
-          >
-            {addButton.icon && <addButton.icon />} {addButton.label}
-          </Button>
-        </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
 
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
 
-            <DialogDescription>{description}</DialogDescription>
-          </DialogHeader>
-
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid gap-6">
             {fields.map((field) => (
               <div key={field.id} className="grid gap-2">
@@ -94,7 +112,7 @@ export const CustomModalForm = ({ addButton, title, description, fields, buttons
                     tabIndex={field.tabIndex}
                     className={field.className}
                     onChange={(e) => setData(field.name, e.target.value)}
-                    value={data[field.name]}
+                    value={data[field.name] || ''}
                   >
                   </textarea>
                 ) : field.type === 'file' ? (
@@ -105,7 +123,8 @@ export const CustomModalForm = ({ addButton, title, description, fields, buttons
                     autoComplete={field.autocomplete}
                     tabIndex={field.tabIndex}
                     accept={field.accept}
-                    type={field.type}
+                    type='file'
+                    onChange={(e) => setData(field.name, e.target.files ? e.target.files[0] : null)}
                   >
                   </Input>
                 ) : (
@@ -116,9 +135,14 @@ export const CustomModalForm = ({ addButton, title, description, fields, buttons
                     autoComplete={field.autocomplete}
                     tabIndex={field.tabIndex}
                     type={field.type}
+                    autoFocus={field.autoFocus}
+                    onChange={(e) => setData(field.name, e.target.value)}
+                    value={data[field.name] || ''}
                   >
                   </Input>
                 )}
+
+                <InputError message={errors?.[field.name]} />
               </div>
             ))}
           </div>
@@ -150,8 +174,8 @@ export const CustomModalForm = ({ addButton, title, description, fields, buttons
               }
             })}
           </DialogFooter>
-        </DialogContent>
-      </form>
+        </form>
+      </DialogContent>
     </Dialog>
   )
 }

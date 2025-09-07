@@ -31,7 +31,7 @@ interface CustomTableProps {
 }
 
 function CustomTable({ columns, actions, data, from, onDelete }: CustomTableProps) {
-    console.log('from custom table', actions);
+    // console.log('from custom table', actions);
 
     const renderActionButtons = (row: TableRow) => {
         return (

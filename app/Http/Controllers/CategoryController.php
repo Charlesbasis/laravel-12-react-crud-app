@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
-use Illuminate\Http\Request;
+use Exception;
 use Inertia\Inertia;
+use App\Models\Category;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Http\Requests\CategoryRequest;
 
 class CategoryController extends Controller
 {
@@ -29,9 +32,27 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CategoryRequest $request)
     {
-        //
+        try {
+            $categoryImagePath = null;
+
+            if ($request->hasFile('image')) {
+                $categoryImagePath = $request->file('image')->store('categories', 'public');
+            } 
+            $category = Category::create([
+                'name' => $request->name,
+                'description' => $request->description,
+                'image' => $categoryImagePath,
+                'slug' => Str::slug($request->name),
+            ]);
+            if ($category) {
+                return redirect()->route('categories.index')->with('success', 'Category created successfully.');
+            }
+            return redirect()->route('categories.index')->with('error', 'Unable to create category. Please try again.');
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Error creating category');
+        }
     }
 
     /**

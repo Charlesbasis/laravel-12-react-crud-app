@@ -3,7 +3,6 @@ export const CategoryTableConfig = {
     columns: [    
         { label: 'Category Name', key: 'name', className: 'border p-4' },
         { label: 'Description', key: 'description', className: 'w-90 border p-4' },
-        { label: 'Price (BDT)', key: 'price', className: 'border p-4' },
         { label: 'Image', key: 'image', isImage: true, className: 'border p-4' },
         { label: 'Created Date', key: 'created_at', className: 'border p-4' },
         { label: 'Actions', key: 'actions', isAction: true, className: 'border p-4' },
