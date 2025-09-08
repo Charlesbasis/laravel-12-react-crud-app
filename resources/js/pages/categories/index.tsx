@@ -116,7 +116,7 @@ export default function Index({ categories }: IndexProps) {
 
     setMode(mode);
 
-    console.log('from index category mode', category, mode);
+    // console.log('from index category mode', category, mode);
 
     if (category) {
       Object.entries(category).forEach(([key, value]) => {
@@ -145,7 +145,7 @@ export default function Index({ categories }: IndexProps) {
         <div className='ml-auto'>
           <CustomModalForm
             addButton={CategoryModalFormConfig.addButton}
-            title={CategoryModalFormConfig.title}
+            title={mode === 'view' ? 'View Category' : (mode === 'edit' ? 'Update Category' : CategoryModalFormConfig.title)}
             description={CategoryModalFormConfig.description}
             fields={CategoryModalFormConfig.fields}
             buttons={CategoryModalFormConfig.buttons}
@@ -157,6 +157,7 @@ export default function Index({ categories }: IndexProps) {
             open={modalOpen}
             onOpenChange={handleModalToggle}
             mode={mode}
+            previewImage={previewImage}
           />
         </div>
         <CustomTable

@@ -58,6 +58,8 @@ interface CustomModalFormProps {
   errors: Record<string, string>;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  mode: 'create' | 'view' | 'edit';
+  previewImage: string | null;
 }
 
 export const CustomModalForm = ({
@@ -73,6 +75,8 @@ export const CustomModalForm = ({
   errors,
   open,
   onOpenChange,
+  mode = 'create',
+  previewImage,
 }: CustomModalFormProps) => {
 
   return (
@@ -113,20 +117,28 @@ export const CustomModalForm = ({
                     className={field.className}
                     onChange={(e) => setData(field.name, e.target.value)}
                     value={data[field.name] || ''}
+                    disabled={processing || mode === 'view'}
                   >
                   </textarea>
                 ) : field.type === 'file' ? (
-                  <Input
-                    id={field.id}
-                    name={field.name}
-                    placeholder={field.placeholder}
-                    autoComplete={field.autocomplete}
-                    tabIndex={field.tabIndex}
-                    accept={field.accept}
-                    type='file'
-                    onChange={(e) => setData(field.name, e.target.files ? e.target.files[0] : null)}
-                  >
-                  </Input>
+                  <div className="space-y-2">
+                    {mode !== 'create' && previewImage && (
+                      <img src={previewImage} alt={data?.[field.key]} />
+                    )}
+                    {mode !== 'view' && (
+                      <Input
+                        id={field.id}
+                        name={field.name}
+                        placeholder={field.placeholder}
+                        autoComplete={field.autocomplete}
+                        tabIndex={field.tabIndex}
+                        accept={field.accept}
+                        type='file'
+                        onChange={(e) => setData(field.name, e.target.files ? e.target.files[0] : null)}
+                      >
+                      </Input>
+                    )}
+                  </div>
                 ) : (
                   <Input
                     id={field.id}
@@ -138,6 +150,7 @@ export const CustomModalForm = ({
                     autoFocus={field.autoFocus}
                     onChange={(e) => setData(field.name, e.target.value)}
                     value={data[field.name] || ''}
+                    disabled={processing || mode === 'view'}
                   >
                   </Input>
                 )}
@@ -161,7 +174,7 @@ export const CustomModalForm = ({
                   </DialogClose>
                 );
               }
-              else if (button.key === 'submit') {
+              else if (mode !== 'view') {
                 return (
                   <Button
                     key={button.key}
