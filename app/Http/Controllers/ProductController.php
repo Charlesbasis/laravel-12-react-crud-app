@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\ProductFormRequest;
 use Exception;
 use Illuminate\Support\Facades\Log as FacadesLog;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -65,10 +66,11 @@ class ProductController extends Controller
                 'description' => $product->description,
                 'price' => $product->price,
                 'featured_image' => $product->featured_image
-                    ? asset('storage/' . $product->featured_image)
+                    // ? asset('storage/' . $product->featured_image)
+                    ? Storage::url($product->featured_image)
                     : null,
                 'featured_image_original_name' => $product->featured_image_original_name,
-                'created_at' => $product->created_at->format('d M Y'),
+                'created_at' => $product->created_at->format('d M Y'),                
             ]);
         }
 

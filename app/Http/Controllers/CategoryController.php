@@ -8,6 +8,7 @@ use App\Models\Category;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Requests\CategoryRequest;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
@@ -16,8 +17,22 @@ class CategoryController extends Controller
      */
     public function index()
     {
+        $categories = Category::paginate(10)->withQueryString();
+
+        $categories->getCollection()->transform(fn($category) => [
+            'id' => $category->id,
+            'name' => $category->name,
+            'description' => $category->description,
+            'slug' => $category->slug,
+            'image' => $category->image
+                ? Storage::url($category->image)
+                : null,
+            'created_at' => $category->created_at->format('d M Y'),
+        ]);
+        
         return Inertia::render('categories/index', [
-            'categories' => Category::paginate(10)->withQueryString(),
+            // 'categories' => Category::paginate(10)->withQueryString(),
+            'categories' => $categories,
         ]);
     }
 
