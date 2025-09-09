@@ -89,16 +89,45 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Category $category)
+    public function update(CategoryRequest $request, Category $category)
     {
-        //
-    }
+        try {
+            $categoryImagePath = null;
+
+            if ($request->hasFile('image')) {
+                $categoryImagePath = $request->file('image')->store('categories', 'public');
+            }
+
+            $category->name = $request->name;
+            $category->description = $request->description;
+            
+            if ($categoryImagePath) {
+                $category->image = $categoryImagePath;
+            }
+            
+            $category->slug = Str::slug($request->name);
+            $category->save();
+            if ($category) {
+                return redirect()->route('categories.index')->with('success', 'Category updated successfully.');
+            }
+            return redirect()->route('categories.index')->with('error', 'Unable to update category. Please try again.');
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Error updating category');
+        }
+    }                
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Category $category)
     {
-        //
+        try {
+            if($category){
+                $category->delete();
+                return redirect()->route('categories.index')->with('success', 'Category deleted successfully.');
+            }            
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Error deleting category');
+        }
     }
 }

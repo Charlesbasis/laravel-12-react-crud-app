@@ -92,7 +92,10 @@ export const CustomModalForm = ({
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent
+        onInteractOutside={(e) => e.preventDefault()}
+        className="sm:max-w-[600px]"
+      >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
 
@@ -122,9 +125,13 @@ export const CustomModalForm = ({
                   </textarea>
                 ) : field.type === 'file' ? (
                   <div className="space-y-2">
-                    {mode !== 'create' && previewImage && (
-                      <img src={previewImage} alt={data?.[field.key]} />
-                    )}
+                    {mode !== 'create' && previewImage &&
+                        <img
+                          src={previewImage}
+                          alt={data?.[field.key]}
+                          className="w-24 h-24 object-cover rounded-lg"
+                        />
+                    }
                     {mode !== 'view' && (
                       <Input
                         id={field.id}

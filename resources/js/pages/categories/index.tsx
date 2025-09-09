@@ -1,5 +1,6 @@
 import { CustomModalForm } from '@/components/custom-modal-form';
 import CustomTable from '@/components/custom-table';
+import { CustomToast, toast } from '@/components/custom-toast';
 import { CategoryModalFormConfig } from '@/config/forms/category-modal-form';
 import { CategoryTableConfig } from '@/config/tables/category-table';
 import AppLayout from '@/layouts/app-layout';
@@ -50,6 +51,13 @@ interface IndexProps {
   filteredCount: number;
 }
 
+interface FlashProps extends Record<string, any> {
+  flash?: {
+    success?: string;
+    error?: string;
+  };
+}
+
 export default function Index({ categories }: IndexProps) {
   // console.log('from index', filters);
   const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
@@ -65,12 +73,25 @@ export default function Index({ categories }: IndexProps) {
     name: '',
     description: '',
     image: null as File | null,
+    _method: 'POST',
   });
 
-  const handleDelete = (id: number, route: string) => {
+  // console.log('from index', flashMessage);
+  
+  const handleDelete = (route: string) => {
     if (confirm('Are you sure you want to delete this product?')) {
       router.delete(route, {
         preserveScroll: true,
+        onSuccess: (response: { props: FlashProps }) => {
+          // console.log('from index Success', response);
+          const successMessage = response.props.flash?.success || "Category deleted successfully.";
+          toast.success(successMessage);
+        },
+        onError: (error: Record<string, string>) => {
+          // console.log('from index Error', error);
+          const errorMessage = error?.message || "Error deleting category";
+          toast.error(errorMessage);
+        },
       });
     }
   }
@@ -78,16 +99,40 @@ export default function Index({ categories }: IndexProps) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // console.log('from index', data);
-    post(route('categories.store'), {
-      onSuccess: (response) => {
-        console.log('from index Success', response);
-        closeModal();
-      },
-      onError: (error) => {
-        console.log('from index Error', error);
-      },
-    })
-  }
+    
+    if(mode === 'edit' && selectedCategory) {
+      data._method = 'PUT';
+      post(route('categories.update', selectedCategory.id), {
+        forceFormData: true,
+        onSuccess: (response: { props: FlashProps }) => {
+          // console.log('from index Success', response);
+          const successMessage = response.props.flash?.success || "Category updated successfully.";
+          toast.success(successMessage);
+          closeModal();
+        },
+        onError: (error: Record<string, string>) => {
+          // console.log('from index Error', error);
+          const errorMessage = error?.message || "Error updating category";
+          toast.error(errorMessage);
+        },
+      })
+    } else {
+      post(route('categories.store'), {
+        onSuccess: (response: { props: FlashProps }) => {
+          // console.log('from index Success', response);
+          const successMessage = response.props.flash?.success || "Category updated successfully.";
+          toast.success(successMessage);
+          closeModal();
+          reset();
+        },
+        onError: (error: Record<string, string>) => {
+          // console.log('from index Error', error);
+          const errorMessage = error?.message || "Error updating category";
+          toast.error(errorMessage);
+        },
+      })
+    }
+  } 
 
   const closeModal = () => {
     setMode('create');
@@ -140,7 +185,9 @@ export default function Index({ categories }: IndexProps) {
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Category Management" />
+      <Head title="Categories" />
+      
+      <CustomToast />
       <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
         <div className='ml-auto'>
           <CustomModalForm

@@ -27,7 +27,7 @@ interface CustomTableProps {
     actions: ActionConfig[];
     data: TableRow[];
     from: number;
-    onDelete: (id: number, route: string) => void;
+    onDelete: (route: string) => void;
     onView: (row: TableRow) => void;
     onEdit: (row: TableRow) => void;
     isModal?: boolean;
@@ -72,7 +72,7 @@ function CustomTable({ columns, actions, data, from, onDelete, onView, onEdit, i
                                 <Button
                                     key={index}
                                     className={action.className}
-                                    onClick={() => onDelete(row.id, route(action.route, row.id))}                                    
+                                    onClick={() => onDelete(route(action.route, row.id))}                                    
                                 >
                                     <IconComponent size={18} />{' '}
                                 </Button>
@@ -118,7 +118,11 @@ function CustomTable({ columns, actions, data, from, onDelete, onView, onEdit, i
                                     <td className="border px-4 py-2 text-center">
                                         {col.isImage ? (
                                             <div>
-                                                <img src={row[col.key]} alt={row.name || 'Image'} className="w-20 h-16 object-cover rounded-lg" />
+                                                <img
+                                                    src={row[col.key]}
+                                                    alt={row.name || 'Image'}
+                                                    className="w-20 h-16 object-cover rounded-lg"
+                                                />
                                             </div>
                                         ) : col.isAction ? (renderActionButtons(row)
                                         ) : (
