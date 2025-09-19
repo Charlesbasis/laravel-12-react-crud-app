@@ -50,7 +50,7 @@ export function AppSidebar() {
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
                             <Link href="/dashboard" prefetch>
-                                <AppLogo />
+                                <AppLogo position={position} />
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -58,12 +58,12 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain items={mainNavItems} position={position} />
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
-                <NavUser />
+                <NavFooter items={footerNavItems} className="mt-auto" position={position} />
+                <NavUser position={position} />
             </SidebarFooter>
         </Sidebar>
     );
