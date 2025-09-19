@@ -1,4 +1,6 @@
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { useLayout } from '@/contexts/LayoutContext';
+import { cn } from '@/lib/utils';
 import { SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
 
@@ -14,5 +16,12 @@ export function AppShell({ children, variant = 'header' }: AppShellProps) {
         return <div className="flex min-h-screen w-full flex-col">{children}</div>;
     }
 
-    return <SidebarProvider defaultOpen={isOpen}>{children}</SidebarProvider>;
+    const { position } = useLayout();
+    
+    return (
+        <SidebarProvider
+            defaultOpen={isOpen}>
+            <div className={cn('flex w-full', position === 'right' ? 'flex-row-reverse' : 'flex-row')}>{children}</div>
+        </SidebarProvider>
+    );
 }

@@ -2,6 +2,7 @@ import { cn } from '@/lib/utils';
 import { Head } from '@inertiajs/react';
 import { AlignLeft, AlignRight, LucideIcon } from 'lucide-react';
 import HeadingSmall from './heading-small';
+import { useLayout } from '@/contexts/LayoutContext';
 
 export const LayoutRtlSettings = () => {
 
@@ -9,6 +10,8 @@ export const LayoutRtlSettings = () => {
         { value: 'left', icon: AlignLeft, label: 'Left' },
         { value: 'right', icon: AlignRight, label: 'Right' },
     ];
+
+    const { position: layoutPosition, updatePosition } = useLayout();
 
     return (
         <div className='flex flex-col gap-4'>
@@ -20,12 +23,12 @@ export const LayoutRtlSettings = () => {
                 {tabs.map(({ value, icon: Icon, label }) => (
                     <button
                         key={value}
-                        // onClick={() => updateAppearance(value)}
+                        onClick={() => updatePosition(value)}
                         className={cn(
                             'flex items-center rounded-md px-3.5 py-1.5 transition-colors',
-                            // appearance === value
-                            //     ? 'bg-white shadow-xs dark:bg-neutral-700 dark:text-neutral-100'
-                            //     : 'text-neutral-500 hover:bg-neutral-200/60 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-700/60',
+                            layoutPosition === value
+                                ? 'bg-white shadow-xs dark:bg-neutral-700 dark:text-neutral-100'
+                                : 'text-neutral-500 hover:bg-neutral-200/60 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-700/60',
                         )}
                     >
                         <Icon className="-ml-1 h-4 w-4" />
