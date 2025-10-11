@@ -1,0 +1,60 @@
+name: Deploy Laravel + React to Shared Hosting
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout code
+      - name: 🧬 Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. Setup PHP for Laravel build
+      - name: ⚙️ Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, intl, bcmath, mysql, curl, dom, gd, json, xml, zip
+          coverage: none
+
+      # 3. Install Composer dependencies
+      - name: 📦 Install Laravel Dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      # 4. Setup Node + pnpm for React build
+      - name: 🧱 Setup Node & pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+      - name: 📦 Install React dependencies
+        run: cd frontend && pnpm install --frozen-lockfile
+      - name: 🧱 Build React
+        run: cd frontend && pnpm run build
+
+      # 5. Move React build into Laravel public folder
+      - name: 📂 Move React build to Laravel public
+        run: |
+          rm -rf public/*
+          cp -r frontend/build/* public/
+
+      # 6. Optimize Laravel for production
+      - name: ⚡ Optimize Laravel
+        run: |
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+
+      # 7. Deploy to hosting via SSH (rsync)
+      - name: 🚀 Deploy via SSH
+        uses: easingthemes/ssh-deploy@v5.1.0
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.HOST }}
+          REMOTE_USER: ${{ secrets.USER }}
+          TARGET: ${{ secrets.TARGET }}
+          ARGS: "-rlgoDzvc --delete"
