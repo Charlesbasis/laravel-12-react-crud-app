@@ -32,15 +32,15 @@ jobs:
         with:
           version: 9
       - name: 📦 Install React dependencies
-        run: cd frontend && pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - name: 🧱 Build React
-        run: cd frontend && pnpm run build
+        run: pnpm run build
 
       # 5. Move React build into Laravel public folder
       - name: 📂 Move React build to Laravel public
         run: |
           rm -rf public/*
-          cp -r frontend/build/* public/
+          cp -r dist/* public/
 
       # 6. Optimize Laravel for production
       - name: ⚡ Optimize Laravel
