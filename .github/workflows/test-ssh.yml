@@ -1,0 +1,29 @@
+name: 🧩 Test SSH Connection to Server
+
+on:
+  workflow_dispatch:  # Manually trigger from GitHub Actions tab
+  # You can also enable it on push to test easily:
+  # push:
+  #   branches:
+  #     - main
+
+jobs:
+  test-ssh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔑 Test SSH Connection
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "✅ Connected successfully to $HOST"
+            echo "Current user: $(whoami)"
+            echo "Current directory: $(pwd)"
+            echo "Disk space:"
+            df -h .
+            echo "Home directory contents:"
+            ls -la ~
+            echo "SSH test complete ✅"
