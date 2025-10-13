@@ -56,6 +56,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           REMOTE_HOST: ${{ secrets.HOST }}
           REMOTE_USER: ${{ secrets.USER }}
+          REMOTE_PORT: ${{ secrets.PORT }}
           TARGET: ${{ secrets.TARGET }}
           ARGS: "-rlgoDzvc --delete --exclude='.env' --exclude='storage/' --exclude='node_modules/' --exclude='vendor/'"
 
@@ -63,28 +64,28 @@ jobs:
       - name: 🧩 Post-Deployment Optimization
         uses: appleboy/ssh-action@v1.2.0
         with:
-          REMOTE_HOST: ${{ secrets.HOST }}
-          REMOTE_USER: ${{ secrets.USER }}
-          REMOTE_PORT: ${{ secrets.PORT }}
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd ${{ secrets.TARGET }}
+  host: ${{ secrets.HOST }}
+  username: ${{ secrets.USER }}
+  port: ${{ secrets.PORT }}
+  key: ${{ secrets.SSH_PRIVATE_KEY }}
+  script: |
+    cd ${{ secrets.TARGET }}
 
-            # Install vendor dependencies on server (shared hosts don’t like vendor upload)
-            composer install --no-dev --optimize-autoloader
+    # Install vendor dependencies on server (shared hosts don’t like vendor upload)
+    composer install --no-dev --optimize-autoloader
 
-            # Run migrations and cache everything
-            php artisan migrate --force
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
-            php artisan event:cache
-            php artisan optimize
+    # Run migrations and cache everything
+    php artisan migrate --force
+    php artisan config:cache
+    php artisan route:cache
+    php artisan view:cache
+    php artisan event:cache
+    php artisan optimize
 
-            # Fix file permissions (no sudo)
-            find storage -type d -exec chmod 775 {} \;
-            find bootstrap/cache -type d -exec chmod 775 {} \;
-            find storage -type f -exec chmod 664 {} \;
-            find bootstrap/cache -type f -exec chmod 664 {} \;
+    # Fix file permissions (no sudo)
+    find storage -type d -exec chmod 775 {} \;
+    find bootstrap/cache -type d -exec chmod 775 {} \;
+    find storage -type f -exec chmod 664 {} \;
+    find bootstrap/cache -type f -exec chmod 664 {} \;
 
-            echo "✅ Post-deployment complete."
+    echo "✅ Post-deployment complete."
