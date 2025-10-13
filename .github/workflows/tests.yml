@@ -25,17 +25,25 @@ jobs:
           tools: composer:v2
           coverage: xdebug
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      # - name: Setup Node
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: '22'
+          # cache: 'npm'
+
+      # - name: Install Node Dependencies
+      #   run: npm ci
+
+      # - name: Build Assets
+      #   run: npm run build
+      - name: 🧱 Setup Node & pnpm
+        uses: pnpm/action-setup@v3
         with:
-          node-version: '22'
-          cache: 'npm'
-
-      - name: Install Node Dependencies
-        run: npm ci
-
-      - name: Build Assets
-        run: npm run build
+          version: 9
+      - name: 📦 Install React dependencies
+        run: pnpm install --no-frozen-lockfile
+      - name: 🧱 Build React
+        run: pnpm run build
 
       - name: Install Dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
