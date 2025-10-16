@@ -1,4 +1,4 @@
-name: Deploy Laravel + React to Shared Hosting
+name: Deploy Laravel + React to CWP Shared Hosting (SSH)
 
 on:
   push:
@@ -10,23 +10,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout code
+      # 1. Checkout repository
       - name: 🧬 Checkout Repository
         uses: actions/checkout@v4
 
-      # 2. Setup PHP for Laravel build
+      # 2. Setup PHP for Laravel
       - name: ⚙️ Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
-          extensions: mbstring, intl, bcmath, mysql, curl, dom, gd, json, xml, zip
+          extensions: mbstring, intl, bcmath, curl, dom, gd, json, xml, zip
           coverage: none
 
-      # 3. Install Composer dependencies
-      - name: 📦 Install Laravel Dependencies
+      # 3. Install Laravel dependencies
+      - name: 📦 Install Composer dependencies
         run: composer install --no-dev --optimize-autoloader
 
-      # 4. Setup Node + pnpm for React build
+      # 4. Setup Node + pnpm for React
       - name: 🧱 Setup Node & pnpm
         uses: pnpm/action-setup@v3
         with:
@@ -36,11 +36,11 @@ jobs:
       - name: 🧱 Build React
         run: pnpm run build
 
-      # 5. Move React build into Laravel public folder
-      # - name: 📂 Move React build to Laravel public
-      #   run: |
-      #     rm -rf public/*
-      #     cp -r dist/* public/
+      # 5. Move React build to Laravel's public folder
+      - name: 📂 Move React build to Laravel public/
+        run: |
+          rm -rf public/*
+          cp -r dist/* public/
 
       # 6. Optimize Laravel for production
       - name: ⚡ Optimize Laravel
@@ -48,42 +48,43 @@ jobs:
           php artisan config:cache
           php artisan route:cache
           php artisan view:cache
+          php artisan event:cache
+          php artisan optimize
 
-      # 7. Deploy to hosting via SSH (rsync)
-      - name: 🚀 Deploy via SSH
+      # 7. Deploy using rsync (SSH)
+      - name: 🚀 Deploy via SSH (Rsync)
         uses: easingthemes/ssh-deploy@v5.1.0
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           REMOTE_HOST: ${{ secrets.HOST }}
           REMOTE_USER: ${{ secrets.USER }}
-          TARGET: ${{ secrets.TARGET }}
-          ARGS: "-rlgoDzvc --delete --exclude='.env' --exclude='storage/' --exclude='node_modules/' --exclude='vendor/'"
+          TARGET: /home/cvhowlad/app.cvhowlader.com
+          ARGS: "-rlgoDzvc --delete --exclude='.env' --exclude='node_modules/' --exclude='vendor/' --exclude='storage/' --exclude='.git*'"
 
-      # 9️⃣ Run post-deployment Laravel commands remotely (no sudo)
-      - name: 🧩 Post-Deployment Optimization
+      # 8. Post-deployment commands (safe, non-root)
+      - name: 🧩 Post-Deployment Laravel Setup
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd ${{ secrets.TARGET }}
+            cd /home/cvhowlad/app.cvhowlader.com
 
-            # Install vendor dependencies on server (shared hosts don’t like vendor upload)
+            # Install production dependencies
             composer install --no-dev --optimize-autoloader
 
-            # Run migrations and cache everything
-            php artisan migrate --force
+            # Rebuild caches
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
             php artisan event:cache
             php artisan optimize
 
-            # Fix file permissions (no sudo)
+            # Fix permissions within allowed directories
             find storage -type d -exec chmod 775 {} \;
             find bootstrap/cache -type d -exec chmod 775 {} \;
             find storage -type f -exec chmod 664 {} \;
             find bootstrap/cache -type f -exec chmod 664 {} \;
 
-            echo "✅ Post-deployment complete."
+            echo "✅ Deployment complete for app.cvhowlader.com"
