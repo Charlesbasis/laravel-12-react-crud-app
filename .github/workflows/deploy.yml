@@ -37,10 +37,10 @@ jobs:
         run: pnpm run build
 
       # 5. Move React build to Laravel's public folder
-      - name: 📂 Move React build to Laravel public/
-        run: |
-          rm -rf public/*
-          cp -r dist/* public/
+      # - name: 📂 Move React build to Laravel public/
+      #   run: |
+      #     rm -rf public/*
+      #     cp -r dist/* public/
 
       # 6. Optimize Laravel for production
       - name: ⚡ Optimize Laravel
